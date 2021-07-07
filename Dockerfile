@@ -6,7 +6,7 @@ ARG TARGETOS=linux
 LABEL maintainer="Akhil R S <hello@ars.vg>"
 
 RUN set -x \
-	&& apk update && apk upgrade && \
+	&& apk update && apk upgrade \
     && apk add --no-cache postgresql-client
 
     
