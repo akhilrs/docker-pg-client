@@ -54,7 +54,7 @@ target "common" {
 }
 
 target "latest" {
-	inherits = ["alpine"]
+	inherits = ["common"]
 	args = {"BASETAG" = "$MAIN_TAG"}
 	tags = [
 		"$IMAGE_NAME:$MAIN_TAG"
@@ -64,7 +64,7 @@ EOF
 
 for TAG in $TAGS_EXTRA; do cat >> "../$DOCKER_BAKE_FILE" << EOF
 target "$TAG" {
-	inherits = ["alpine"]
+	inherits = ["common"]
 	args = {"BASETAG" = "$TAG"}
 	tags = [
 		"$IMAGE_NAME:$TAG"
