@@ -32,7 +32,7 @@ esac
 done
 
 DOCKER_BAKE_FILE=${1:-"docker-bake.hcl"}
-TAGS=${TAGS:-"3.13 3.12"}
+TAGS=${TAGS:-"latest 3.13 3.12"}
 PLATFORMS=${PLATFORMS:-"linux/amd64 linux/arm64"}
 IMAGE_NAME=${IMAGE_NAME:-"akhilrs/pg-client"}
 
@@ -43,7 +43,7 @@ MAIN_TAG=${TAGS%%" "*} # First tag
 TAGS_EXTRA=${TAGS#*" "} # Rest of tags
 P="\"$(echo $PLATFORMS | sed 's/ /", "/g')\""
 
-T="\"alpine-latest\", \"$(echo alpine-$TAGS_EXTRA | sed 's/ /", "alpine-/g')\""
+T="\"latest\", \"$(echo $TAGS_EXTRA | sed 's/ /", "/g')\""
 
 cat > "../$DOCKER_BAKE_FILE" << EOF
 group "default" {
@@ -52,26 +52,22 @@ group "default" {
 target "common" {
 	platforms = [$P]
 }
-target "alpine" {
-	inherits = ["common"]
-	dockerfile = "Dockerfile"
-}
-target "alpine-latest" {
+
+target "latest" {
 	inherits = ["alpine"]
 	args = {"BASETAG" = "$MAIN_TAG"}
 	tags = [
-		"$IMAGE_NAME:alpine",
-		"$IMAGE_NAME:$MAIN_TAG-alpine"
+		"$IMAGE_NAME:$MAIN_TAG"
 	]
 }
 EOF
 
 for TAG in $TAGS_EXTRA; do cat >> "../$DOCKER_BAKE_FILE" << EOF
-target "alpine-$TAG" {
+target "$TAG" {
 	inherits = ["alpine"]
 	args = {"BASETAG" = "$TAG"}
 	tags = [
-		"$IMAGE_NAME:$TAG-alpine"
+		"$IMAGE_NAME:$TAG"
 	]
 }
 EOF
